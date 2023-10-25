@@ -36,15 +36,16 @@ export const saving = async (input) => {
     });
 }
 
-export const computation = async (input) => {
+export const computation = async (input, result, source) => {
+    console.log(input, result, source)
     const collection = await client.getOrCreateCollection({
-        name: "myntist",
+        name: source,
         embeddingFunction: embedder,
     });
 
     return await new Promise(async (resolve, reject) => {
         await collection.query({
-            nResults: 10,
+            nResults: result,
             queryTexts: [input],
         }).then((result) => {
             resolve(result);
