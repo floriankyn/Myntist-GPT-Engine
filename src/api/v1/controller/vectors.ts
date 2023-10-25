@@ -12,7 +12,6 @@ export const save = async (req, res) => {
         });
 
     } catch (e) {
-        console.log(e)
         return res.status(500).send({
             message: "An error occured while saving the vector",
             error: e
@@ -25,14 +24,12 @@ export const compute = async (req, res) => {
 
     try {
         const computedData = await computation(input, results, source);
-        console.log(computedData);
 
         return res.status(200).send({
             message: "The vector has been successfully computed",
             vector: computedData
         });
     } catch (e) {
-        console.log(e)
         return res.status(500).send({
             message: "An error occured while computing the vector",
             error: e
