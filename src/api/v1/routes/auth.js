@@ -6,7 +6,7 @@ import { validateAuth } from "../validator/auth.js";
 import { authenticate } from "../middleware/authentication.js";
 
 router.post("/api/v1/auth/generate", [validateAuth], generate);
-router.get("/api/v1/auth/token/", [authenticate], verify);
+router.get("/api/v1/auth/token", [authenticate], verify);
 
 export {
     router
