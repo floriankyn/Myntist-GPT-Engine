@@ -21,10 +21,10 @@ export const save = async (req, res) => {
 }
 
 export const compute = async (req, res) => {
-    const { input } = req.body;
+    const { input, results, source } = req.body;
 
     try {
-        const computedData = await computation(input);
+        const computedData = await computation(input, results, source);
         console.log(computedData);
 
         return res.status(200).send({
