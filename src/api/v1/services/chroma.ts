@@ -12,21 +12,27 @@ export const saving = async (input) => {
     });
 
     return await new Promise(async (resolve, reject) => {
-        let embedds = await embedder.generate(input);
+        try {
+            for(const e of input) {
+                let embedds = await embedder.generate(e.content);
 
-        await collection.add({
-            ids: ["id1"],
-            embeddings: [
-                embedds[0]
-            ],
-            // @ts-ignore
-            where: [{ source: "myntist" }],
-            documents: [input],
-        }).then((result) => {
-            resolve(result);
-        }).catch((e) => {
+                await collection.add({
+                    ids: [e.id],
+                    embeddings: [
+                        embedds[0]
+                    ],
+                    // @ts-ignore
+                    where: [{ source: "myntist" }],
+                    documents: [e.content],
+                });
+            }
+
+            resolve("success");
+        } catch (e) {
             reject(e);
-        });
+        }
+
+
     });
 }
 
