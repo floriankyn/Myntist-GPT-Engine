@@ -1,22 +1,31 @@
-import { PrismaClient } from "@prisma/client";
+import {
+    PrismaClient, tokens,
+} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function getTokenUserDB(id)  {
-    return prisma.tokens.findUnique({
+export async function getTokenUserDB(
+    id: number
+): Promise<tokens | null>  {
+    const data: tokens | null = await prisma.tokens.findUnique({
         where: {
             id: id
         }
     });
+
+    return data;
 }
 
-export async function generateTokenDB(name, credential_level)  {
-    const result = await prisma.tokens.create({
+export async function generateTokenDB(
+    name: string,
+    credential_level: number
+): Promise<tokens>  {
+    const data: tokens = await prisma.tokens.create({
         data: {
             name: name,
             credential_level: credential_level
         }
     });
 
-    return result.id;
+    return data;
 }
