@@ -1,47 +1,34 @@
-//authentication.js//
+import jsonWebToken, { JwtPayload, VerifyErrors } from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
 
-import jwt from "jsonwebtoken";
-import { getTokenUserDB } from "../../config/database.js";
+interface AuthenticatedRequest extends Request {
+  token?: string | boolean | JwtPayload | undefined;
+}
 
-export const authenticate = (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1];
+export const authenticate = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Response | void => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1];
 
-    if(!token) {
-        return res.status(401).send({
-            message: "No token provided"
-        });
+  if (!token) {
+    return res.sendStatus(401);
+  }
+
+  const secret = process.env.JWT_SECRET;
+
+  if (!secret) {
+    console.error('MASTER_TOKEN_SECRET is not set.');
+    return res.status(500).send('Internal Server Error');
+  }
+
+  jsonWebToken.verify(token, secret, (err: VerifyErrors | null, decoded) => {
+    if (err) {
+      return res.sendStatus(403);
     }
-
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-        if(err) {
-            return res.status(401).send({
-                message: "Unauthorized"
-            });
-        }
-
-        if(decoded) {
-            const { id, name, credential_level } = decoded;
-            const authorizedUsers = await getTokenUserDB(id);
-
-            if (!authorizedUsers) {
-                return res.status(401).send({
-                    message: "Unauthorized"
-                });
-            }
-
-            if (authorizedUsers.name !== name || authorizedUsers.credential_level !== credential_level) {
-                return res.status(401).send({
-                    message: "Unauthorized"
-                });
-            }
-
-            req.auth = {
-                id: id,
-                name: name,
-                credential_level: credential_level
-            };
-
-            return next();
-        }
-    });
+    req.token = decoded;
+    next();
+  });
 };

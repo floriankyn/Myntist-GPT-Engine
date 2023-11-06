@@ -5,8 +5,8 @@ This repository serves as a starting point for building Express APIs, saving you
 ## Table of Contents
 
 - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
 - [Usage](#usage)
 - [Folder Structure](#folder-structure)
 - [Configuration](#configuration)
@@ -32,21 +32,19 @@ To set up the project locally, follow these steps:
    git clone https://github.com/floriankyn/express-api-template.git
    cd express-api-template
    ```
-   
 2. Install the dependencies:
    ```sh
     npm install
-    ```
-   
+   ```
 3. Copy the example environment file and make the required configuration changes in the .env file:
    ```sh
    cp src/api/config/.env.example src/api/config/.env
    ```
 4. Start the development server:
-    ```sh
-    npm run dev
-    ```
-The API should now be running on http://localhost:3000.
+   `sh
+npm run dev
+`
+   The API should now be running on http://localhost:3000.
 
 ## Usage
 
@@ -55,13 +53,13 @@ Provide examples and instructions on how to use the API or include features of t
 ## Folder Structure
 
 - src/: Source code for the application.
-    - api/: API specific code.
-        - config/: Configuration files.
-        - v1/: Version 1 of the API.
-            - controller/: Controller files.
-            - middleware/: Middleware files.
-            - routes/: Route definitions.
-            - validator/: Validation files.
+  - api/: API specific code.
+    - config/: Configuration files.
+    - v1/: Version 1 of the API.
+      - controller/: Controller files.
+      - middleware/: Middleware files.
+      - routes/: Route definitions.
+      - validator/: Validation files.
 - prisma/: Prisma ORM configuration and schema.
 
 ## Configuration
@@ -89,6 +87,3 @@ DB_HOST=localhost
 ```
 
 Ensure you replace the placeholder values with your actual configuration. Keep this file secure, especially the JWT_SECRET, as it is crucial for the security of your application.
-
-
-

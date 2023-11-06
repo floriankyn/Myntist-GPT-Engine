@@ -1,78 +1,71 @@
-import { ChromaClient } from "chromadb";
-import { OpenAIEmbeddingFunction } from "chromadb";
+import { OpenAIEmbeddingFunction } from 'chromadb';
+import { ChromaClient } from 'chromadb';
+import { QueryResponse } from 'chromadb/dist/main/types';
 const client = new ChromaClient();
 const embedder = new OpenAIEmbeddingFunction({
-    openai_api_key: process.env.OPENAI_API_KEY,
+  openai_api_key: process.env.OPENAI_API_KEY
 });
 
-export const saving = async (input) => {
-    const collection = await client.getOrCreateCollection({
-        name: "myntist",
-        embeddingFunction: embedder,
-    });
+export const saving = async (input: vectorSave[]): Promise<void> => {
+  console.log(input);
+  const collection = await client.getOrCreateCollection({
+    name: 'myntist',
+    embeddingFunction: embedder
+  });
 
-    return await new Promise(async (resolve, reject) => {
-        try {
-            for(const e of input) {
-                let embedds = await embedder.generate(e.content);
+  return await new Promise(async (resolve, reject) => {
+    try {
+      for (const e of input) {
+        const embedds: number[][] = await embedder.generate([e.content]);
 
-                await collection.add({
-                    ids: [e.id],
-                    embeddings: [
-                        embedds[0]
-                    ],
-                    // @ts-ignore
-                    where: [{ source: "myntist" }],
-                    documents: [e.content],
-                });
-            }
-
-            resolve("success");
-        } catch (e) {
-            reject(e);
-        }
-
-
-    });
-}
-
-export const computation = async (input, result, source) => {
-    console.log(input, result, source)
-    const collection = await client.getOrCreateCollection({
-        name: source,
-        embeddingFunction: embedder,
-    });
-
-    return await new Promise(async (resolve, reject) => {
-        await collection.query({
-            nResults: result,
-            queryTexts: [input],
-        }).then((result) => {
-            resolve(result);
-        }).catch((e) => {
-            reject(e);
+        await collection.add({
+          ids: [e.id],
+          embeddings: [embedds[0]],
+          documents: [e.content]
         });
-    });
-}
+      }
 
-export const listVectors = async (source) => {
-    const collection = await client.getCollection({
-        name: source,
-    });
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 
-    return await new Promise(async (resolve, reject) => {
-        try {
-            let data = await collection.get(
-                {
-                    offset: 0,
-                    limit: await collection.count(),
-                }
-            );
+export const computation = async (
+  input: string,
+  result: number,
+  source: string
+): Promise<QueryResponse> => {
+  const collection = await client.getOrCreateCollection({
+    name: source,
+    embeddingFunction: embedder
+  });
 
-            resolve(data);
-        } catch (e) {
-            reject(e);
-        }
+  return await collection
+    .query({
+      nResults: result,
+      queryTexts: [input]
+    })
+    .then()
+    .catch();
+};
 
-    });
-}
+export const listVectors = async (source: string) => {
+  const collection = await client.getCollection({
+    name: source
+  });
+
+  return await new Promise(async (resolve, reject) => {
+    try {
+      const data = await collection.get({
+        offset: 0,
+        limit: await collection.count()
+      });
+
+      resolve(data);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
