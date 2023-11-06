@@ -1,18 +1,17 @@
-# Express API Template
 
-This repository serves as a starting point for building Express APIs, saving you time from setting up the project from scratch. It includes a structured folder setup, essential configurations, and examples to kickstart your development.
+# Myntist-GPT-Engine
 
-## Table of Contents
+Myntist GPT Engige is an api which aims to handle the creation of vectorial embedded data as well as retrieving them and using it with Chat GPT.
 
+
+
+## Table of content
+- [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Usage](#usage)
-- [Folder Structure](#folder-structure)
 - [Configuration](#configuration)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+## Tech Stack
+
+**Server:** Node, Express, Typescript, Chromadb, Prisma
 
 ## Getting Started
 
@@ -22,6 +21,7 @@ Before you begin, ensure you have met the following requirements:
 
 - Node.js: Download and install Node.js from [nodejs.org](https://nodejs.org/).
 - npm: npm is included with Node.js. Ensure it is installed by running `npm -v`.
+- Python: python is requited to run chromadb
 
 ### Installation
 
@@ -29,8 +29,8 @@ To set up the project locally, follow these steps:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/floriankyn/express-api-template.git
-   cd express-api-template
+   git clone https://github.com/global-tech-dev/myntist-gpt-engine.git
+   cd myntist-gpt-engine
    ```
 2. Install the dependencies:
    ```sh
@@ -40,50 +40,102 @@ To set up the project locally, follow these steps:
    ```sh
    cp src/api/config/.env.example src/api/config/.env
    ```
-4. Start the development server:
-   `sh
-npm run dev
-`
-   The API should now be running on http://localhost:3000.
-
-## Usage
-
-Provide examples and instructions on how to use the API or include features of the template.
-
-## Folder Structure
-
-- src/: Source code for the application.
-  - api/: API specific code.
-    - config/: Configuration files.
-    - v1/: Version 1 of the API.
-      - controller/: Controller files.
-      - middleware/: Middleware files.
-      - routes/: Route definitions.
-      - validator/: Validation files.
-- prisma/: Prisma ORM configuration and schema.
-
+4. Install chromadb
+    ```sh
+    pip install chromadb
+    ```
+5. Start the chroma backend serve:
+    ```sh
+    chroma run --path /db_path
+    ```
+5. Start the development server:
+   ```ssh
+    npm run dev
+    ```
+   The myntist gpt engine should now be running on http://localhost:3000.
 ## Configuration
 
-To configure the application, you need to set up environment variables. Copy the `.env.example` file in the `src/api/config/` directory to a new file named `.env`, and fill in the values as described below:
+To configure the application, you need to set up environment variables. Copy the `.env.example` file in the `src/api/config/` directory to a new file named `.en``, and fill in the values as described below:
 
-- `PORT`: The port number on which the Express server will run. For example, `3000`.
-- `JWT_SECRET`: A secret key for signing JSON Web Tokens. Ensure this is a secure and unique string.
-- `DB_NAME`: The name of your database.
-- `DB_USERNAME`: The username for connecting to your database.
-- `DB_PASSWORD`: The password for connecting to your database.
-- `DB_DIALECT`: The dialect of your database (e.g., `mysql`, `postgres`, `sqlite`).
-- `DB_HOST`: The hostname or IP address of your database server.
+- `PORT`: The port number on which the Express server will run. For example, 3000.
+- `JWT_SECRE`: A secret key for signing JSON Web Tokens. Ensure this is a secure and unique string.
+- `OPENAI_API_KE`: The secret key for Openai API.
+## API Reference
 
-Example:
+#### Create a token
 
-```env
-PORT=3000
-JWT_SECRET=your_jwt_secret
-DB_NAME=your_database_name
-DB_USERNAME=your_database_username
-DB_PASSWORD=your_database_password
-DB_DIALECT=mysql
-DB_HOST=localhost
+```sh
+curl --request GET \
+  --url http://localhost:3000/api/v1/auth/token \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJpZCI6MiwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiY3JlYXRlZF9hdCI6IjIwMjMtMTEtMDJUMTk6MzE6MjMuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIzLTExLTAyVDE5OjMxOjIzLjAwMFoifSwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiaWF0IjoxNjk4OTUzNDgyfQ.yxQUAOu8__bJKsxUoWDZ6DCYjSjyhwuPT1LXy0rBPxc' \
+  --header 'User-Agent: insomnia/8.3.0'
 ```
 
-Ensure you replace the placeholder values with your actual configuration. Keep this file secure, especially the JWT_SECRET, as it is crucial for the security of your application.
+#### Verify a token
+
+```sh
+curl --request GET \
+  --url http://localhost:3000/api/v1/auth/token \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJpZCI6MiwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiY3JlYXRlZF9hdCI6IjIwMjMtMTEtMDJUMTk6MzE6MjMuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIzLTExLTAyVDE5OjMxOjIzLjAwMFoifSwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiaWF0IjoxNjk4OTUzNDgyfQ.yxQUAOu8__bJKsxUoWDZ6DCYjSjyhwuPT1LXy0rBPxc' \
+  --header 'User-Agent: insomnia/8.3.0'
+```
+
+#### Create Vectors
+
+```sh
+curl --request POST \
+  --url http://localhost:3000/api/v1/vectors/save \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJpZCI6MiwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiY3JlYXRlZF9hdCI6IjIwMjMtMTEtMDJUMTk6MzE6MjMuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIzLTExLTAyVDE5OjMxOjIzLjAwMFoifSwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiaWF0IjoxNjk4OTUzNDgyfQ.yxQUAOu8__bJKsxUoWDZ6DCYjSjyhwuPT1LXy0rBPxc' \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/8.3.0' \
+  --data '{
+  "input": [
+    {
+      "id": "48-building-oppertunity-and-momentum",
+      "content": "\"In the Myntist ecosystem, we introduce a groundbreaking concept: Consumer Leverage. Every branded product you buy not only serves your immediate needs but also becomes a lasting asset, contributing to your continuous value cycle. As these products are resold within our community, the value returns to you, the consumer, amplifying your purchasing power and financial freedom. With Myntist, every purchase is an investment in your future, ensuring that you always get more out of what you buy. Experience the power of Consumer Leverage, only at Myntist.\" This message underscores the idea that consumers are not just spending money but making an investment each time they purchase a product on Myntist, enhancing their financial well-being in the long term."
+    }
+  ]
+}'
+```
+
+#### List Vectors
+
+```sh
+curl --request GET \
+  --url http://localhost:3000/api/v1/vectors/list/myntist \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJpZCI6MiwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiY3JlYXRlZF9hdCI6IjIwMjMtMTEtMDJUMTk6MzE6MjMuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIzLTExLTAyVDE5OjMxOjIzLjAwMFoifSwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiaWF0IjoxNjk4OTUzNDgyfQ.yxQUAOu8__bJKsxUoWDZ6DCYjSjyhwuPT1LXy0rBPxc' \
+  --header 'Content-Type: multipart/form-data' \
+  --header 'User-Agent: insomnia/8.3.0' \
+  --form =
+```
+
+#### Compute Vectors
+
+```sh
+curl --request POST \
+  --url http://localhost:3000/api/v1/vectors/compute \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJpZCI6MiwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiY3JlYXRlZF9hdCI6IjIwMjMtMTEtMDJUMTk6MzE6MjMuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIzLTExLTAyVDE5OjMxOjIzLjAwMFoifSwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiaWF0IjoxNjk4OTUzNDgyfQ.yxQUAOu8__bJKsxUoWDZ6DCYjSjyhwuPT1LXy0rBPxc' \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/8.3.0' \
+  --data '{
+	"input": "how could myntist manage a subscription income for my ecommerce store",
+	"results": 4,
+	"source": "myntist"
+}'
+```
+
+#### Asking Pepper
+
+```sh
+curl --request POST \
+  --url http://localhost:3000/api/v1/vectors/chat \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJpZCI6MiwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiY3JlYXRlZF9hdCI6IjIwMjMtMTEtMDJUMTk6MzE6MjMuMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDIzLTExLTAyVDE5OjMxOjIzLjAwMFoifSwibmFtZSI6IkZsb3JpYW4iLCJjcmVkZW50aWFsX2xldmVsIjotMSwiaWF0IjoxNjk4OTUzNDgyfQ.yxQUAOu8__bJKsxUoWDZ6DCYjSjyhwuPT1LXy0rBPxc' \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/8.3.0' \
+  --data '{
+	"input": "What is assetization?",
+	"results": 4,
+	"source": "myntist"
+}'
+```
+
